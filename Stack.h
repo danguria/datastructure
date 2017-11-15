@@ -42,6 +42,7 @@ Stack<T>::Stack(int stackCapacity) : capacity(stackCapacity) {
     top = -1;
 }
 
+// TODO: Is destructor necessary?
 template <class T>
 Stack<T>::~Stack() { delete [] stack; }
 
