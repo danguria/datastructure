@@ -10,7 +10,7 @@ int main() {
     } catch (const char* msg) {
         cerr << msg << endl;
     }
-    Stack<string> s(20);
+    Stack<string> s(5);
 
     try {
         s.Top();
@@ -39,6 +39,8 @@ int main() {
     } catch (const char* msg) {
         cerr << msg << endl;
     }
+
+    cout << "size: " << s.Size() << endl;
 
     return 0;
 }

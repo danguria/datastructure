@@ -19,6 +19,9 @@ class Stack
         // Return top element of stack.
         T& Top() const;
 
+        // Return the number of element in stack.
+        int Size() const;
+
         // Insert item into the top of the stack.
         void Push(const T&);
 
@@ -50,6 +53,9 @@ inline T& Stack<T>::Top() const {
     if (IsEmpty()) throw "Stack is empty";
     return stack[top];
 }
+
+template <class T>
+inline int Stack<T>::Size() const { return top + 1; }
 
 template <class T>
 void Stack<T>::Push(const T& item) {
