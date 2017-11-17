@@ -2,10 +2,11 @@
 #define _STACK_H_
 
 #include <algorithm>
+#include "Bag.h"
 #include "utils.h"
 
 template <class T>
-class Stack
+class Stack : public Bag<T>
 { // A finite ordered list with zero or more elements.
     public:
         // Create an empty stack whost initial capacity is stackCapacity.
@@ -13,66 +14,42 @@ class Stack
 
         ~Stack();
 
-        // If number of elements in the stack is 0, return true, else return false.
-        bool IsEmpty() const;
-
         // Return top element of stack.
         T& Top() const;
-
-        // Return the number of element in stack.
-        int Size() const;
-
-        // Insert item into the top of the stack.
-        void Push(const T&);
 
         // Delete the top element of the stack.
         void Pop();
 
-    private:
-        int capacity;
-        int top;
-        T* stack;
+        // Throw an exception when this function is called
+        // because we don't want this function is called.
+        T& Element() const;
 
 };
 
+// Constructure for Stack calls constructor for Bag.
 template <class T>
-Stack<T>::Stack(int stackCapacity) : capacity(stackCapacity) {
-    if (capacity < 1 ) throw "Stack capacity must be > 0";
-    stack = new T[stackCapacity];
-    top = -1;
-}
+Stack<T>::Stack(int stackCapacity) : Bag<T>(stackCapacity) {}
 
-// TODO: Is destructor necessary?
+// Destructor for Bag is automatically called when Stack
+// is destroyed. This ensures that array is deleted.
 template <class T>
-Stack<T>::~Stack() { delete [] stack; }
-
-template <class T>
-inline bool Stack<T>::IsEmpty() const { return top == -1; }
+Stack<T>::~Stack() {}
 
 template <class T>
 inline T& Stack<T>::Top() const {
-    if (IsEmpty()) throw "Stack is empty";
-    return stack[top];
-}
-
-template <class T>
-inline int Stack<T>::Size() const { return top + 1; }
-
-template <class T>
-void Stack<T>::Push(const T& item) {
-    if (top + 1 == capacity) {
-        ChangeSize1D(stack, capacity, 2 * capacity);
-        capacity *= 2;
-    }
-
-    stack[++top] = item;
+    if (this->IsEmpty()) throw "Stack is empty";
+    return this->array[this->top];
 }
 
 template <class T>
 void Stack<T>::Pop() {
-    if (IsEmpty()) throw "Stack is empty, cannot delete";
-    stack[top--].~T();
+    if (this->IsEmpty()) throw "Stack is empty, cannot delete";
+    this->array[this->top--].~T();
 }
 
+template <class T>
+inline T& Stack<T>::Element() const {
+    throw "Function Element() cannot be called.";
+}
 
 #endif

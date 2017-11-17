@@ -4,43 +4,20 @@ using namespace std;
 
 int main() {
 
+    Bag<int> b(3);
+    Stack<int> s(3);
 
-    try {
-        Stack<int> s(0);
-    } catch (const char* msg) {
-        cerr << msg << endl;
-    }
-    Stack<string> s(5);
+    // use Bag::Push
+    b.Push(1); b.Push(2); b.Push(3);
 
-    try {
-        s.Top();
-    } catch (const char* msg) {
-        cerr << msg << endl;
-    }
-    
+    // Stack::Push not defined, so use Bag::Push.
+    s.Push(1); s.Push(2); s.Push(3);
 
-    try {
-        for (int i = 0; i < 10; i++) {
-            s.Push(to_string(i));
-            cout << s.Top() << endl;
-        }
+    b.Pop(); // use Bag::Pop, which calls Bag::IsEmpty
 
-        for (int i = 0; i < 11; i++) {
-            cout << s.Top() << endl;
-            s.Pop();
-        }
-
-    } catch (const char* msg) {
-        cerr << msg << endl;
-    }
-
-    try {
-        s.Pop();
-    } catch (const char* msg) {
-        cerr << msg << endl;
-    }
-
-    cout << "size: " << s.Size() << endl;
+    // uses Stack::pop, which calls Bag::IsEmpty because IsEmpty has not been redefined in Stack.
+    s.Pop();
+    s.Element();
 
     return 0;
 }

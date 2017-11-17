@@ -9,24 +9,24 @@ class Bag
 {
     public:
         Bag(int bagCapacity = 10);
-        ~Bag ();
+        virtual ~Bag ();
 
         // return number of elements in bag
-        int Size() const;
+        virtual int Size() const;
 
         // return true if the bag is empty; false otherwise
-        bool IsEmpty() const;
+        virtual bool IsEmpty() const;
 
         // return an element that is in the bag
-        T& Element() const;
+        virtual T& Element() const;
 
         // insert an integer into the bag
-        void Push(const T&);
+        virtual void Push(const T&);
 
         // delete an interger from the bag
-        void Pop();
+        virtual void Pop();
 
-    private:
+    protected:
         T *array;
         int capacity;
         int top;
@@ -57,8 +57,10 @@ Bag<T>::~Bag() { delete [] array; }
 
 template <class T>
 void Bag<T>::Push(const T& x) {
-    if (top + 1 == capacity) ChangeSize1D(array, capacity, 2 * capacity);
-    capacity *= 2;
+    if (top + 1 == capacity) {
+        ChangeSize1D(array, capacity, 2 * capacity);
+        capacity *= 2;
+    }
 
     array[++top] = x;
 }

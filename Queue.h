@@ -2,9 +2,10 @@
 #define _QUEUE_H_
 
 #include "utils.h"
+#include "Bag.h"
 
 template <class T>
-class Queue
+class Queue : public Bag<T>
 { // A finite ordered list with zero or more elements.
     public:
         // Create an empty queue whose initial capacity is queueCapacity.
@@ -28,25 +29,23 @@ class Queue
         // Delete item at the front of the queue.
         void Pop();
 
+        // Given below is not used in Queue.
+        int Size() const;
+        T& Element() const;
+
     private:
-        T* queue;     // array for queue elements.
         int front,    // one counterclockwise from front
-            rear,     // array position of rear element
-            capacity; // capacity of queue array
+            rear;     // array position of rear element
 };
 
 
 template <class T>
-Queue<T>::Queue(int queueCapacity) : capacity(queueCapacity) {
-    if (queueCapacity < 1) throw "Capacity mubst be > 0";
-
-    queue = new T[capacity];
+Queue<T>::Queue(int queueCapacity) : Bag<T>(queueCapacity) {
     front = rear = 0;
 }
 
-// TODO: Is destructor necessary?
 template <class T>
-Queue<T>::~Queue() { delete [] queue; }
+Queue<T>::~Queue() {}
 
 template <class T>
 inline bool Queue<T>::IsEmpty() const {
@@ -56,49 +55,64 @@ inline bool Queue<T>::IsEmpty() const {
 template <class T>
 inline T& Queue<T>::Front() const {
     if (IsEmpty()) throw "Queue is empty. No front element.";
-    return queue[(front + 1) % capacity];
+    return this->array[(front + 1) % this->capacity];
 }
 
 template <class T>
 inline T& Queue<T>::Rear() const {
     if (IsEmpty()) throw "Queue is empty. No rear element.";
-    return queue[rear];
+    return this->array[rear];
 }
 
 template <class T>
 void Queue<T>::Push(const T& item) {
     // if the queue is full, double it.
-    if ((rear + 1) % capacity == front) {
-        T* newQueue = new T[2 * capacity];
+    if ((rear + 1) % this->capacity == front) {
+        T* newQueue = new T[2 * this->capacity];
 
         // Copy from queue to newQueue
-        int start = (front + 1) % capacity;
+        int start = (front + 1) % this->capacity;
         if (start < 2) { // no wrap around
-            std::copy(queue + start, queue + capacity -1 , newQueue);
+            std::copy(this->array + start,
+                    this->array + this->capacity -1,
+                    newQueue);
         } else { // wrap around
-            std::copy(queue + start, queue + capacity, newQueue);
-            std::copy(queue, queue + rear + 1, newQueue + capacity - start);
+            std::copy(this->array+ start,
+                    this->array+ this->capacity,
+                    newQueue);
+            std::copy(this->array,
+                    this->array+ rear + 1,
+                    newQueue + this->capacity - start);
         }
 
         // Switch to newQueue
-        front = 2 * capacity - 1;
-        rear = capacity - 2;
-        capacity *= 2;
-        delete [] queue;
-        queue = newQueue;
+        front = 2 * this->capacity - 1;
+        rear = this->capacity - 2;
+        this->capacity *= 2;
+        delete [] this->array;
+        this->array= newQueue;
     }
 
-    rear = (rear + 1) % capacity;
-    queue[rear] = item;
+    rear = (rear + 1) % this->capacity;
+    this->array[rear] = item;
 }
 
 template <class T>
 void Queue<T>::Pop() {
     if (IsEmpty()) throw "Queue is empty, cannot delete.";
 
-    front = (front + 1) % capacity;
-    queue[front].~T();
+    front = (front + 1) % this->capacity;
+    this->array[front].~T();
 }
 
+template <class T>
+inline int Queue<T>::Size() const {
+    throw "Function Size() cannot be used in Queue";
+}
+
+template <class T>
+inline T& Queue<T>::Element() const {
+    throw "Function Element() cannot be used in Queue";
+}
 
 #endif
