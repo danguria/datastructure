@@ -102,12 +102,40 @@ void test5()
 
 }
 
+void test6()
+{ // test NoStackInorder
+    BinaryTreeNode<char> *root = new BinaryTreeNode<char>('+');
+
+    BinaryTreeNode<char> *currentNode = root;
+    currentNode->leftChild = new BinaryTreeNode<char>('*');
+    currentNode->rightChild = new BinaryTreeNode<char>('E');
+
+    currentNode = currentNode->leftChild;
+    currentNode->leftChild = new BinaryTreeNode<char>('*');
+    currentNode->rightChild = new BinaryTreeNode<char>('D');
+    
+    currentNode = currentNode->leftChild;
+    currentNode->leftChild = new BinaryTreeNode<char>('/');
+    currentNode->rightChild = new BinaryTreeNode<char>('C');
+    
+    currentNode = currentNode->leftChild;
+    currentNode->leftChild = new BinaryTreeNode<char>('A');
+    currentNode->rightChild = new BinaryTreeNode<char>('B');
+
+    BinaryTree<char>* tree = new BinaryTree<char>(root);
+    tree->NoStackInorder();
+    cout << endl;
+    delete tree;
+
+}
+
 int main() {
     //test1(); // basic operations
     //test2(); // test constructors
     //test3(); // test copy constructor
     //test4(); // test copy assign operator
-    test5(); // test destructors
+    //test5(); // test destructors
+    test6(); // test NoStackInorder
 
     return 0;
 }

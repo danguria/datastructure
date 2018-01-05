@@ -27,8 +27,7 @@ class BinaryTree
     friend class InorderIterator;
     public:
         // Constructors
-        // creates an empty binary tree
-        BinaryTree();
+        BinaryTree();  // creates an empty binary tree
         BinaryTree(BinaryTreeNode<T>* root);
         // creates a binary tree whose left subtree is bt1,
         // whose right subtree is bt2, and whose root node contains item
@@ -48,12 +47,12 @@ class BinaryTree
 
         T RootData(); // return the data in the root node of *this
 
-        // BinaryTree operations
+        // BinaryTree traversal operations
         void Inorder();
         void Postorder();
         void Preorder();
-
         void NonrecInorder();
+        void NoStackInorder();
 
     private:
         void Inorder(BinaryTreeNode<T>* currentNode);
@@ -245,6 +244,78 @@ void BinaryTree<T>::NonrecInorder() {
         Visit(currentNode);
         currentNode = currentNode->rightChild;
     }
+}
+
+template <class T>
+void BinaryTree<T>::NoStackInorder()
+{ // Inorder traversal of binary tree using a fixed amount of additional storage
+    if (!root) return; // empty binary tree
+
+    BinaryTreeNode<T> *top = 0, *lastRight = 0, *p, *q, *r, *r1;
+    p = q = root;
+    while (1) {
+        while (1) {
+            if ((!p->leftChild) && (!p->rightChild)) { // leaf node
+                Visit(p);
+                break;
+            }
+            if (p->leftChild) {
+                // move to p->leftChild
+                r = p->leftChild;
+                p->leftChild = q;
+                q = p;
+                p = r;
+            } else {
+                // visit p and move to p->rightChild
+                Visit(p);
+                r = p->rightChild;
+                p->rightChild = q;
+                q = p;
+                p = r;
+            }
+        } // end of inner while
+        // p is a leaf node, move upward to a node whose
+        // right subtree has not yet been examined
+        BinaryTreeNode<T> *av = p;
+        while (1) {
+            if (p == root) return;
+            if (!q->leftChild) { // q is linked via rightChild
+                r = q->rightChild;
+                q->rightChild = p;
+                p = q;
+                q = r;
+            } else if (!q->rightChild) { // q is linked via leftChild
+                r = q->leftChild;
+                q->leftChild = p;
+                p = q;
+                q = r;
+                Visit(p);
+            } else { // check if p is a rightChild of q
+                if (q == lastRight) {
+                    r = top;
+                    lastRight = r->leftChild;
+                    top = r->rightChild; // unstack
+                    r->leftChild = r->rightChild = 0;
+                    r = q->rightChild;
+                    q->rightChild = p;
+                    p = q;
+                    q = r;
+                } else { // p is leftChild of q
+                    Visit(q);
+                    av->leftChild = lastRight;
+                    av->rightChild = top;
+                    top = av;
+                    lastRight = q;
+                    r = q->leftChild;
+                    q->leftChild = p; // restore link to p
+                    r1 = q->rightChild;
+                    q->rightChild = r;
+                    p = r1;
+                    break;
+                }
+            }
+        } // end of inner while loop
+    } // end of outer while loop
 }
 
 
