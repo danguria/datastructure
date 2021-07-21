@@ -5,36 +5,19 @@ using namespace std;
 
 void test1()
 {
-    BinaryTreeNode<char> *root = new BinaryTreeNode<char>('+');
-
-    BinaryTreeNode<char> *currentNode = root;
-    currentNode->leftChild = new BinaryTreeNode<char>('*');
-    currentNode->rightChild = new BinaryTreeNode<char>('E');
-
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('*');
-    currentNode->rightChild = new BinaryTreeNode<char>('D');
-    
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('/');
-    currentNode->rightChild = new BinaryTreeNode<char>('C');
-    
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('A');
-    currentNode->rightChild = new BinaryTreeNode<char>('B');
-
-    BinaryTree<char>* tree = new BinaryTree<char>(root);
-    tree->Inorder();
+    BinaryTree<char> t;
+    t.setup();
+    t.Inorder();
     cout << endl;
-    tree->Postorder();
+    t.Postorder();
     cout << endl;
-    tree->Preorder();
+    t.Preorder();
     cout << endl;
-    tree->NonrecInorder();
+    t.NonrecInorder();
     cout << endl;
 
 
-    BinaryTree<char>::InorderIterator *it = new BinaryTree<char>::InorderIterator(root);
+    BinaryTree<char>::InorderIterator *it = new BinaryTree<char>::InorderIterator(t);
     char *data;
     while ((data = it->Next()))
         cout << *data;
@@ -49,7 +32,7 @@ void test2()
     BinaryTree<int> root(left, x, right);
 
     int *data;
-    BinaryTree<int>::InorderIterator it(root.root);
+    BinaryTree<int>::InorderIterator it(root);
     while ((data = it.Next()))
             cout << *data;
     cout << endl;
@@ -59,9 +42,13 @@ void test3()
 { // test copy constructor
     char op = '+';
     BinaryTree<char> left(new BinaryTreeNode<char>('2'));
-    BinaryTree<char> right(left);
+    BinaryTree<char> right(new BinaryTreeNode<char>('3'));
     BinaryTree<char> root(left, op, right);
     root.Inorder();
+    cout << endl;
+
+    BinaryTree<char> copied(root);
+    copied.Inorder();
     cout << endl;
 }
 
@@ -70,32 +57,17 @@ void test4()
     char op = '+';
     BinaryTree<char> left(new BinaryTreeNode<char>('2'));
     BinaryTree<char> right = left;
-    BinaryTree<char> root(left, op, right);
-    root.Inorder();
+    BinaryTree<char> *root = new BinaryTree<char>(left, op, right);
+    root->Inorder();
     cout << endl;
+    delete root;
 }
 
 void test5()
 { // test destructors
-    BinaryTreeNode<char> *root = new BinaryTreeNode<char>('+');
 
-    BinaryTreeNode<char> *currentNode = root;
-    currentNode->leftChild = new BinaryTreeNode<char>('*');
-    currentNode->rightChild = new BinaryTreeNode<char>('E');
-
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('*');
-    currentNode->rightChild = new BinaryTreeNode<char>('D');
-    
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('/');
-    currentNode->rightChild = new BinaryTreeNode<char>('C');
-    
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('A');
-    currentNode->rightChild = new BinaryTreeNode<char>('B');
-
-    BinaryTree<char>* tree = new BinaryTree<char>(root);
+    BinaryTree<char>* tree = new BinaryTree<char>();
+    tree->setup();
     tree->Inorder();
     cout << endl;
     delete tree;
@@ -104,38 +76,23 @@ void test5()
 
 void test6()
 { // test NoStackInorder
-    BinaryTreeNode<char> *root = new BinaryTreeNode<char>('+');
 
-    BinaryTreeNode<char> *currentNode = root;
-    currentNode->leftChild = new BinaryTreeNode<char>('*');
-    currentNode->rightChild = new BinaryTreeNode<char>('E');
-
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('*');
-    currentNode->rightChild = new BinaryTreeNode<char>('D');
-    
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('/');
-    currentNode->rightChild = new BinaryTreeNode<char>('C');
-    
-    currentNode = currentNode->leftChild;
-    currentNode->leftChild = new BinaryTreeNode<char>('A');
-    currentNode->rightChild = new BinaryTreeNode<char>('B');
-
-    BinaryTree<char>* tree = new BinaryTree<char>(root);
+    BinaryTree<char>* tree = new BinaryTree<char>();
+    tree->setup();
     tree->NoStackInorder();
     cout << endl;
     delete tree;
 
 }
-
+/*
+*/
 int main() {
     //test1(); // basic operations
     //test2(); // test constructors
     //test3(); // test copy constructor
     //test4(); // test copy assign operator
-    //test5(); // test destructors
-    test6(); // test NoStackInorder
+    test5(); // test destructors
+    //test6(); // test NoStackInorder
 
     return 0;
 }

@@ -10,11 +10,10 @@ class BinaryTreeNode
 {
     friend class BinaryTree<T>;
     public:
-        BinaryTreeNode(BinaryTreeNode<T>& rhs);
         BinaryTreeNode(T data);
+        BinaryTreeNode(T data, BinaryTreeNode<T> *leftChild, BinaryTreeNode<T> *rightChild);
         ~BinaryTreeNode();
-        BinaryTreeNode& operator=(BinaryTreeNode<T>& rhs);
-//    private:
+    private:
         BinaryTreeNode<T>* leftChild;
         BinaryTreeNode<T>* rightChild;
         
@@ -26,9 +25,12 @@ class BinaryTree
 {
     friend class InorderIterator;
     public:
-        // Constructors
+        /************************
+         * Constructors
+        ************************/
         BinaryTree();  // creates an empty binary tree
         BinaryTree(BinaryTreeNode<T>* root);
+        
         // creates a binary tree whose left subtree is bt1,
         // whose right subtree is bt2, and whose root node contains item
         BinaryTree(BinaryTree<T>& bt1, T& item, BinaryTree<T>& bt2);
@@ -54,23 +56,25 @@ class BinaryTree
         void NonrecInorder();
         void NoStackInorder();
 
+        void setup();
+
     private:
         void Inorder(BinaryTreeNode<T>* currentNode);
         void Postorder(BinaryTreeNode<T>* currentNode);
         void Preorder(BinaryTreeNode<T>* currentNode);
         void Visit(BinaryTreeNode<T>* currentNode);
+        BinaryTreeNode<T>* Copy(BinaryTreeNode<T>* origNode);
 
-   // private:
-    public:
+    private:
         BinaryTreeNode<T>* root;
 
     public:
         class InorderIterator
         {
             public:
-                InorderIterator(BinaryTreeNode<T>* currentNode)
+                InorderIterator(BinaryTree<T>& tree)
                 {
-                    this->currentNode = currentNode;
+                    this->currentNode = tree.root;
                 }
                
                 T* Next();
@@ -87,25 +91,29 @@ class BinaryTree
 template <class T>
 BinaryTreeNode<T>::BinaryTreeNode(T data) :data(data)
 {
-    leftChild = rightChild = nullptr;
+    leftChild = rightChild = 0;
 }
 
 template <class T>
-BinaryTreeNode<T>::BinaryTreeNode(BinaryTreeNode<T>& rhs)
-    : data(rhs.data) {}
-
-template <class T>
-BinaryTreeNode<T>& BinaryTreeNode<T>::operator=(BinaryTreeNode<T>& rhs)
+BinaryTreeNode<T>::BinaryTreeNode(T data, BinaryTreeNode<T>* leftChild, BinaryTreeNode<T>* rightChild)
+    : data(data)
 {
-    data = rhs.data;
-    return *this;
+   this->leftChild = leftChild;
+   this->rightChild = rightChild;
 }
-
+        
 template <class T>
 BinaryTreeNode<T>::~BinaryTreeNode()
 {
-    if (leftChild != nullptr) delete leftChild;
-    if (rightChild != nullptr) delete rightChild;
+    std::cout << "destroy node - " << data << std::endl;
+    if (leftChild) {
+        delete leftChild;
+        leftChild = 0;
+    }
+    if (rightChild) {
+        delete rightChild;
+        rightChild = 0;
+    }
 }
 
 
@@ -115,13 +123,13 @@ BinaryTreeNode<T>::~BinaryTreeNode()
 template <class T>
 BinaryTree<T>::BinaryTree()
 {
-    this->root = nullptr;
+    this->root = 0;
 }
 
 template <class T>
 BinaryTree<T>::BinaryTree(BinaryTreeNode<T>* root)
 {
-    this->root = root;
+    this->root = Copy(root);
 }
 
 template <class T>
@@ -129,33 +137,48 @@ BinaryTree<T>::BinaryTree(BinaryTree<T>& bt1, T& item,
         BinaryTree<T>& bt2)
 {
     this->root = new BinaryTreeNode<T>(item);
-    this->root->leftChild = bt1.root;
-    this->root->rightChild = bt2.root;
-}
-
-template <class T>
-BinaryTree<T>::BinaryTree(BinaryTree<T>& rhs)
-{
-    this->root = rhs.root;
+    this->root->leftChild = Copy(bt1.root);
+    this->root->rightChild = Copy(bt2.root);
 }
 
 template <class T>
 BinaryTree<T>::~BinaryTree()
 {
-    delete this->root;
+    std::cout << "destory tree - " << this->root->data << std::endl;
+    if (this->root) {
+        delete this->root;
+        this->root = 0;
+    }
+}
+
+template <class T>
+BinaryTree<T>::BinaryTree(BinaryTree<T>& rhs)
+{
+    this->root = Copy(rhs.root);
+}
+
+template <class T>
+BinaryTreeNode<T>* BinaryTree<T>::Copy(BinaryTreeNode<T>* origNode)
+{
+    
+    if (!origNode) return 0;
+    std::cout << "copy node = " << origNode->data << std::endl;
+    return new BinaryTreeNode<T>(origNode->data,
+            Copy(origNode->leftChild),
+            Copy(origNode->rightChild));
 }
 
 template <class T>
 BinaryTree<T>& BinaryTree<T>::operator=(BinaryTree<T>& rhs)
 {
-    this->root = rhs.root;
+    this->root = Copy(rhs.root);
     return *this;
 }
 
 template <class T>
 bool BinaryTree<T>::IsEmpty()
 {
-    return this->root != nullptr;
+    return !this->root;
 }
 
 template <class T>
@@ -340,6 +363,23 @@ T* BinaryTree<T>::InorderIterator::Next()
     T& temp = currentNode->data;
     currentNode = currentNode->rightChild;
     return &temp;
+}
+
+template <class T>
+void BinaryTree<T>::setup()
+{
+    root = new BinaryTreeNode<T>('+');
+    root->leftChild = new BinaryTreeNode<T>('*');
+    root->rightChild = new BinaryTreeNode<T>('E');
+
+    root->leftChild->leftChild = new BinaryTreeNode<T>('*');
+    root->leftChild->rightChild= new BinaryTreeNode<T>('D');
+    
+    root->leftChild->leftChild->leftChild = new BinaryTreeNode<T>('/');
+    root->leftChild->leftChild->rightChild = new BinaryTreeNode<T>('C');
+    
+    root->leftChild->leftChild->leftChild->leftChild = new BinaryTreeNode<T>('A');
+    root->leftChild->leftChild->leftChild->leftChild = new BinaryTreeNode<T>('B');
 }
 
 #endif // __TREE_NODE
